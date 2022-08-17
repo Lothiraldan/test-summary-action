@@ -406,6 +406,10 @@ export async function parseFile(filename: string): Promise<TestResult> {
         return await parseTap(data)
     }
 
+    if (data.match(/^.*litf_version.*\n/)) {
+        return await parseLitfData(data)
+    }
+
     const xml: any = await parser(data)
 
     if (xml.testsuites || xml.testsuite) {
