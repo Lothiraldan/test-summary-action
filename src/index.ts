@@ -1,7 +1,7 @@
-import * as fs from "fs"
-import * as util from "util"
 import * as core from "@actions/core"
+import * as fs from "fs"
 import * as glob from "glob-promise"
+import * as util from "util"
 
 import { TestResult, TestStatus, parseFile } from "./test_parser"
 
@@ -100,6 +100,7 @@ async function run(): Promise<void> {
         }
 
         for (const path of paths) {
+            core.debug(`Analyzing: ${path}`)
             const result = await parseFile(path)
 
             total.counts.passed += result.counts.passed

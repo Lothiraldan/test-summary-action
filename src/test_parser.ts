@@ -404,6 +404,7 @@ export async function parseFile(filename: string): Promise<TestResult> {
         data.match(/^ok /) ||
         data.match(/^not ok /)
     ) {
+        core.debug(`: Using TAP Parser on ${filename}`)
         return await parseTap(data)
     }
 
