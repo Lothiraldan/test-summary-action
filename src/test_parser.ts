@@ -1,3 +1,4 @@
+import * as core from "@actions/core"
 import * as fs from "fs"
 import * as util from "util"
 
@@ -406,10 +407,14 @@ export async function parseFile(filename: string): Promise<TestResult> {
         return await parseTap(data)
     }
 
-    if (data.trim().match(/^.*litf_version.*\n/)) {
+    let trimmedData = data.trim()
+    let debug = trimmedData.slice(0, 100)
+    core.debug(`: First characters of ${filename}: ${debug}`)
+    if (trimmedData.match(/^.*litf_version.*\n/)) {
         return await parseLitfData(data)
     }
 
+    core.debug(`: Using XML Parser on ${filename}`)
     const xml: any = await parser(data)
 
     if (xml.testsuites || xml.testsuite) {
