@@ -39,10 +39,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const fs = __importStar(__nccwpck_require__(7147));
-const util = __importStar(__nccwpck_require__(3837));
 const core = __importStar(__nccwpck_require__(2186));
+const fs = __importStar(__nccwpck_require__(7147));
 const glob = __importStar(__nccwpck_require__(8252));
+const util = __importStar(__nccwpck_require__(3837));
 const test_parser_1 = __nccwpck_require__(2393);
 const dashboardUrl = "http://svg.test-summary.com/dashboard.svg";
 const passIconUrl = "http://svg.test-summary.com/icon/pass.svg?s=12";
@@ -116,6 +116,7 @@ function run() {
                 exception: undefined
             };
             for (const path of paths) {
+                core.debug(`Analyzing: ${path}`);
                 const result = yield (0, test_parser_1.parseFile)(path);
                 total.counts.passed += result.counts.passed;
                 total.counts.failed += result.counts.failed;
@@ -261,6 +262,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseFile = exports.parseLITFFile = exports.parseJunitFile = exports.parseTapFile = exports.parseJunit = exports.parseTap = exports.TestStatus = void 0;
+const core = __importStar(__nccwpck_require__(2186));
 const fs = __importStar(__nccwpck_require__(7147));
 const util = __importStar(__nccwpck_require__(3837));
 const xml2js_1 = __importDefault(__nccwpck_require__(6189));
@@ -595,8 +597,16 @@ function parseFile(filename) {
         if (data.match(/^TAP version 13\r?\n/) ||
             data.match(/^ok /) ||
             data.match(/^not ok /)) {
+            core.debug(`: Using TAP Parser on ${filename}`);
             return yield parseTap(data);
         }
+        let trimmedData = data.trim();
+        let debug = trimmedData.slice(0, 100);
+        core.debug(`: First characters of ${filename}: ${debug}`);
+        if (trimmedData.match(/^.*litf_version.*\n/)) {
+            return yield parseLitfData(data);
+        }
+        core.debug(`: Using XML Parser on ${filename}`);
         const xml = yield parser(data);
         if (xml.testsuites || xml.testsuite) {
             return yield parseJunitXml(xml);
