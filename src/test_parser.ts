@@ -406,7 +406,7 @@ export async function parseFile(filename: string): Promise<TestResult> {
         return await parseTap(data)
     }
 
-    if (data.match(/^.*litf_version.*\n/)) {
+    if (data.trim().match(/^.*litf_version.*\n/)) {
         return await parseLitfData(data)
     }
 
